@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Where Should You Travel Next? – 1‑Minute Xcursions Quiz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0F74FF;
+      --accent: #111827;
+      --bg: #f3f4f6; /* soft light grey */
+      --surface: #ffffff;
+      --border: #e5e7eb; /* neutral grey border */
+      --muted: #6b7280;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
+      color: var(--accent);
+      background: var(--bg);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+    }
+    /* Top brand bar */
+    .brandbar {
+      width: 100%;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--accent);
+      font-size: 14px;
+    }
+    .brandbar .logo { font-weight: 800; letter-spacing: 0.2px; }
+    .brandbar .tag { color: var(--muted); }
+
+    /* Centered card */
+    .wrap {
+      display: grid;
+      place-items: center;
+      padding: 16px;
+    }
+    .card {
+      width: 100%;
+      max-width: 760px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(17,24,39,0.08);
+      padding: 18px;
+    }
+
+    .header {
+      padding: 4px 6px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .title { margin: 0; font-size: 22px; font-weight: 800; }
+    .subtitle { margin: 6px 0 12px; color: var(--muted); }
+
+    /* Progress bar */
+    .progress {
+      height: 8px; border-radius: 999px; background: #edf2ff; position: relative; overflow: hidden;
+    }
+    .progress > span { display: block; height: 100%; width: 0%; background: var(--primary); border-radius: 999px; transition: width 260ms ease; }
+
+    /* Question area */
+    .question {
+      padding: 16px 4px 6px;
+      min-height: 240px;
+    }
+    .q-text { font-size: 20px; font-weight: 800; margin: 0 0 8px; }
+    .q-help { color: var(--muted); margin: 0 0 12px; }
+
+    .options { display: grid; gap: 10px; }
+    .option {
+      display: block; width: 100%; max-width: 520px; margin-inline: auto;
+      text-align: left;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 14px 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(17,24,39,0.05);
+      transform: scale(1);
+      transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, color 120ms ease, border-color 120ms ease;
+    }
+    .option:hover { transform: scale(1.01); }
+    .option.selected { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 4px 10px rgba(15,116,255,0.28); }
+    .option:focus-visible { outline: 3px solid rgba(15,116,255,0.35); }
+
+    /* Nav buttons */
+    .nav { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding-top: 14px; }
+    .btn {
+      appearance: none; border: none; border-radius: 12px; padding: 12px 18px; font-weight: 700; cursor: pointer; transition: background 120ms ease, transform 120ms ease, color 120ms ease; 
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-outline { background: transparent; color: var(--accent); border: 2px solid var(--border); }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+    /* Transitions */
+    .view { opacity: 0; transform: translateY(6px); transition: opacity 220ms ease, transform 220ms ease; }
+    .view.in { opacity: 1; transform: translateY(0); }
+
+    /* Result styles */
+    .result-title { margin: 6px 0 6px; font-size: 22px; font-weight: 800; }
+    .result-text { color: var(--accent); }
+    .result-muted { color: var(--muted); }
+
+    /* Footer spacer */
+    .footer { padding: 12px; text-align: center; color: var(--muted); font-size: 12px; }
+
+    @media (min-width: 780px) {
+      .title { font-size: 26px; }
+      .q-text { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="brandbar">
+    <div class="logo">Xcursions</div>
+    <div class="tag">Travel, simplified.</div>
+  </div>
+
+  <main class="wrap">
+    <section class="card" aria-live="polite">
+      <div class="header">
+        <h1 class="title">Where Should You Travel Next?</h1>
+        <p class="subtitle">Find your perfect trip vibe in under 60 seconds.</p>
+        <div class="progress" aria-label="Progress"><span id="progressBar"></span></div>
+      </div>
+
+      <div id="view" class="view">
+        <div class="question">
+          <h2 id="qText" class="q-text"></h2>
+          <p id="qHelp" class="q-help"></p>
+          <div id="options" class="options"></div>
+        </div>
+        <div class="nav">
+          <button id="backBtn" class="btn btn-outline">Back</button>
+          <button id="nextBtn" class="btn btn-primary" disabled>Next</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="footer">© Xcursions</div>
+
+  <script>
+    const categoriesMeta = {
+      beach: {
+        name: 'Beach & Chill Lover',
+        desc: "You’re all about sun, sand, slow mornings and soft life. Think turquoise waters, lazy brunches and sunsets that reset your brain.",
+        regions: ['Zanzibar', 'Seychelles', 'Cape Verde', 'Bali']
+      },
+      city: {
+        name: 'City Explorer',
+        desc: "You love bright lights, city walks, great food and endless things to do. Museums, rooftop bars and metro lines don’t scare you.",
+        regions: ['London', 'Dubai', 'Istanbul', 'Paris']
+      },
+      culture: {
+        name: 'Culture & History Seeker',
+        desc: "You travel to learn. Castles, ruins, museums and local stories are your thing. You come back from trips with facts, not just photos.",
+        regions: ['Cairo', 'Rome', 'Athens', 'Jerusalem']
+      },
+      nightlife: {
+        name: 'Nightlife & Vibes Traveller',
+        desc: "You want music, parties, late nights and big energy. You follow the beats, not just the itinerary.",
+        regions: ['Dubai', 'Lagos (staycation)', 'Barcelona', 'Mykonos']
+      },
+      nature: {
+        name: 'Nature & Adventure Explorer',
+        desc: "You love views, mountains, wildlife and active days. Think hiking, safaris, cable cars and road trips with crazy scenery.",
+        regions: ['Cape Town', 'Kenya (safari)', 'Rwanda', 'Switzerland']
+      }
+    };
+
+    const priority = ['city','beach','culture','nature','nightlife'];
+
+    const questions = [
+      {
+        text: "Q1. What’s your ideal vacation vibe?",
+        help: "Pick the vibe that best fits you.",
+        options: [
+          { text: "Lying by the beach with a drink in hand", maps: ['beach'] },
+          { text: "Exploring a new city on foot, metro and Uber", maps: ['city'] },
+          { text: "Visiting museums, old buildings and historic sites", maps: ['culture'] },
+          { text: "Going out at night, events, clubs and lounges", maps: ['nightlife'] },
+          { text: "Hiking, nature views, road trips and outdoor activities", maps: ['nature'] },
+        ]
+      },
+      {
+        text: "Q2. Who are you most likely travelling with?",
+        help: "Your travel crew shapes the vibe.",
+        options: [
+          { text: "Just me – solo mission", maps: ['city','culture','nature'] },
+          { text: "A small group of friends", maps: ['nightlife','beach','nature'] },
+          { text: "My partner", maps: ['beach','culture','city'] },
+          { text: "Family (including kids)", maps: ['beach','culture','nature'] },
+        ]
+      },
+      {
+        text: "Q3. What matters most to you on a trip?",
+        help: "What’s the core outcome you want?",
+        options: [
+          { text: "Relaxing and switching off", maps: ['beach'] },
+          { text: "Seeing famous landmarks", maps: ['city','culture'] },
+          { text: "Feeling the local culture and food", maps: ['culture'] },
+          { text: "Parties, events and nightlife", maps: ['nightlife'] },
+          { text: "New adventures and activities", maps: ['nature'] },
+        ]
+      },
+      {
+        text: "Q4. How do you feel about crowds?",
+        help: "Be honest — it matters.",
+        options: [
+          { text: "I don’t mind busy cities", maps: ['city','nightlife'] },
+          { text: "I like a balance", maps: ['beach','city','culture'] },
+          { text: "I prefer quiet and calm", maps: ['beach','nature'] },
+          { text: "I love big events and festivals", maps: ['nightlife'] },
+        ]
+      },
+      {
+        text: "Q5. Pick the moment that feels like you.",
+        help: "Choose the scene you want to be in.",
+        options: [
+          { text: "Lying on a beach chair", maps: ['beach'] },
+          { text: "Walking through a city skyline", maps: ['city'] },
+          { text: "Standing in front of a famous monument", maps: ['culture'] },
+          { text: "At a rooftop bar at night", maps: ['nightlife'] },
+          { text: "On a mountain or viewpoint", maps: ['nature'] },
+        ]
+      }
+    ];
+
+    const progressBar = document.getElementById('progressBar');
+    const viewEl = document.getElementById('view');
+    const qTextEl = document.getElementById('qText');
+    const qHelpEl = document.getElementById('qHelp');
+    const optionsEl = document.getElementById('options');
+    const backBtn = document.getElementById('backBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    let idx = 0; // question index
+    const selections = new Array(questions.length).fill(null); // store selected option index per question
+
+    function setProgress(i) {
+      const pct = Math.round(((i + 1) / questions.length) * 100);
+      progressBar.style.width = pct + '%';
+    }
+
+    function renderQuestion(i) {
+      const q = questions[i];
+      qTextEl.textContent = q.text;
+      qHelpEl.textContent = q.help || '';
+
+      optionsEl.innerHTML = '';
+      q.options.forEach((opt, optIdx) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'option';
+        b.textContent = opt.text;
+        b.setAttribute('data-opt-index', optIdx);
+        if (selections[i] === optIdx) b.classList.add('selected');
+        b.addEventListener('click', () => {
+          selections[i] = optIdx;
+          [...optionsEl.children].forEach(el => el.classList.remove('selected'));
+          b.classList.add('selected');
+          nextBtn.disabled = false;
+        });
+        optionsEl.appendChild(b);
+      });
+
+      backBtn.style.visibility = i === 0 ? 'hidden' : 'visible';
+      nextBtn.textContent = i === questions.length - 1 ? 'See Result' : 'Next';
+      nextBtn.disabled = selections[i] === null;
+      nextBtn.style.display = '';
+
+      setProgress(i);
+      // fade in
+      requestAnimationFrame(() => {
+        viewEl.classList.add('in');
+      });
+    }
+
+    function showResult() {
+      // compute scores
+      const scores = { beach: 0, city: 0, culture: 0, nightlife: 0, nature: 0 };
+      selections.forEach((sel, i) => {
+        const maps = questions[i].options[sel].maps;
+        maps.forEach(m => { scores[m] += 1; });
+      });
+      const max = Math.max(...Object.values(scores));
+      const tied = Object.keys(scores).filter(k => scores[k] === max);
+      const topKey = tied.length === 1 ? tied[0] : priority.find(p => tied.includes(p));
+      const c = categoriesMeta[topKey];
+
+      // build result view
+      qTextEl.textContent = `You’re a ${c.name} 🌍`;
+      qHelpEl.innerHTML = '';
+      optionsEl.innerHTML = '';
+
+      const desc = document.createElement('p');
+      desc.className = 'result-text';
+      desc.textContent = c.desc;
+
+      const regions = document.createElement('p');
+      regions.className = 'result-muted';
+      regions.textContent = `Ideal destinations: ${c.regions.join(', ')}`;
+
+      const cta = document.createElement('a');
+      cta.href = '#';
+      cta.className = 'option selected';
+      cta.style.textAlign = 'center';
+      cta.textContent = 'Plan this vibe with Xcursions';
+      cta.setAttribute('role', 'button');
+
+      const reset = document.createElement('button');
+      reset.type = 'button';
+      reset.className = 'btn btn-outline';
+      reset.textContent = 'Retake quiz';
+      reset.style.marginTop = '10px';
+      reset.addEventListener('click', () => {
+        idx = 0;
+        for (let k = 0; k < selections.length; k++) selections[k] = null;
+        renderQuestion(idx);
+      });
+
+      optionsEl.append(desc, regions, cta, reset);
+
+      backBtn.style.visibility = 'visible';
+      nextBtn.style.display = 'none';
+      setProgress(questions.length - 1);
+      // re-show the view after transition hides it
+      requestAnimationFrame(() => { viewEl.classList.add('in'); });
+    }
+
+    backBtn.addEventListener('click', () => {
+      if (idx > 0) {
+        viewEl.classList.remove('in');
+        setTimeout(() => {
+          idx -= 1;
+          renderQuestion(idx);
+        }, 160);
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (selections[idx] === null) return; // guard
+      viewEl.classList.remove('in');
+      setTimeout(() => {
+        if (idx < questions.length - 1) {
+          idx += 1;
+          renderQuestion(idx);
+        } else {
+          showResult();
+        }
+      }, 160);
+    });
+
+    // initial render
+    renderQuestion(idx);
+  </script>
+</body>
+</html>
