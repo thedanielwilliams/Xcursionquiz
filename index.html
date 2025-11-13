@@ -115,6 +115,11 @@
     .result-text { color: var(--accent); }
     .result-muted { color: var(--muted); }
     .result-img { width: 100%; max-width: 520px; margin: 8px auto 10px; border-radius: 16px; display: block; object-fit: cover; aspect-ratio: 16 / 9; box-shadow: 0 6px 18px rgba(17,24,39,0.12); }
+    
+    /* Share button + subtext */
+    .share-btn { display: block; width: 100%; max-width: 520px; margin: 8px auto 4px; background: #0F74FF; color: #fff; border: none; border-radius: 999px; padding: 14px 16px; font-weight: 700; cursor: pointer; box-shadow: 0 8px 20px rgba(15,116,255,0.28); transform: scale(1); transition: transform 120ms ease, box-shadow 120ms ease; }
+    .share-btn:hover { transform: scale(1.02); box-shadow: 0 12px 26px rgba(15,116,255,0.35); }
+    .share-subtext { text-align: center; color: var(--muted); font-size: 12px; margin: 4px 0 0; }
 
     /* Footer spacer */
     .footer { padding: 12px; text-align: center; color: var(--muted); font-size: 12px; }
@@ -190,6 +195,7 @@
     };
 
     const priority = ['city','beach','culture','nature','nightlife'];
+    const categorySlugs = { beach: 'beach-lover', city: 'city-explorer', culture: 'heritage-hunter', nightlife: 'night-nomad', nature: 'ajala-the-adventurer' };
 
     const questions = [
       {
@@ -339,18 +345,27 @@
       cta.textContent = 'Plan this vibe with Xcursions';
       cta.setAttribute('role', 'button');
 
-      const reset = document.createElement('button');
-      reset.type = 'button';
-      reset.className = 'btn btn-outline';
-      reset.textContent = 'Retake quiz';
-      reset.style.marginTop = '10px';
-      reset.addEventListener('click', () => {
-        idx = 0;
-        for (let k = 0; k < selections.length; k++) selections[k] = null;
-        renderQuestion(idx);
+      // Share to Twitter button
+      const shareBtn = document.createElement('button');
+      shareBtn.type = 'button';
+      shareBtn.className = 'share-btn';
+      shareBtn.textContent = 'Share your result on Twitter';
+      shareBtn.addEventListener('click', () => {
+        const path = window.location.pathname.replace(/[^/]*$/, ''); // ensure trailing slash directory path
+        const base = window.location.origin + path; // works for localhost and GitHub Pages project sites
+        const quizLink = base;
+        const slug = categorySlugs[topKey] || topKey;
+        const resultUrl = base + 'results/' + slug + '.html';
+        const tweetText = `I am a ${c.name}! 🚀\nTake THIS QUIZ to find out your travel personality 👇\n${quizLink}`;
+        const url = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweetText) + '&url=' + encodeURIComponent(resultUrl);
+        window.open(url, '_blank');
       });
 
-      optionsEl.append(desc, regions, cta, reset);
+      const shareSub = document.createElement('p');
+      shareSub.className = 'share-subtext';
+      shareSub.textContent = 'Share to stand a chance to win $10.';
+
+      optionsEl.append(desc, regions, cta, shareBtn, shareSub);
 
       backBtn.style.visibility = 'visible';
       nextBtn.style.display = 'none';
