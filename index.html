@@ -114,6 +114,7 @@
     .result-title { margin: 6px 0 6px; font-size: 22px; font-weight: 800; }
     .result-text { color: var(--accent); }
     .result-muted { color: var(--muted); }
+    .result-img { width: 100%; max-width: 520px; margin: 8px auto 10px; border-radius: 16px; display: block; object-fit: cover; aspect-ratio: 16 / 9; box-shadow: 0 6px 18px rgba(17,24,39,0.12); }
 
     /* Footer spacer */
     .footer { padding: 12px; text-align: center; color: var(--muted); font-size: 12px; }
@@ -159,27 +160,32 @@
       beach: {
         name: 'Beach & Chill Lover',
         desc: "You’re all about sun, sand, slow mornings and soft life. Think turquoise waters, lazy brunches and sunsets that reset your brain.",
-        regions: ['Zanzibar', 'Seychelles', 'Cape Verde', 'Bali']
+        regions: ['Zanzibar', 'Seychelles', 'Cape Verde', 'Bali'],
+        image: 'Beach lover.png'
       },
       city: {
-        name: 'City Explorer',
+        name: 'The City Explorer',
         desc: "You love bright lights, city walks, great food and endless things to do. Museums, rooftop bars and metro lines don’t scare you.",
-        regions: ['London', 'Dubai', 'Istanbul', 'Paris']
+        regions: ['London', 'Dubai', 'Istanbul', 'Paris'],
+        image: 'CITYEXPLORER.png'
       },
       culture: {
-        name: 'Culture & History Seeker',
+        name: 'The Heritage Hunter',
         desc: "You travel to learn. Castles, ruins, museums and local stories are your thing. You come back from trips with facts, not just photos.",
-        regions: ['Cairo', 'Rome', 'Athens', 'Jerusalem']
+        regions: ['Cairo', 'Rome', 'Athens', 'Jerusalem'],
+        image: 'Heritage hunter.png'
       },
       nightlife: {
-        name: 'Nightlife & Vibes Traveller',
+        name: 'The Night Nomad',
         desc: "You want music, parties, late nights and big energy. You follow the beats, not just the itinerary.",
-        regions: ['Dubai', 'Lagos (staycation)', 'Barcelona', 'Mykonos']
+        regions: ['Dubai', 'Lagos (staycation)', 'Barcelona', 'Mykonos'],
+        image: 'night.png'
       },
       nature: {
-        name: 'Nature & Adventure Explorer',
+        name: 'Ajala The Adventurer',
         desc: "You love views, mountains, wildlife and active days. Think hiking, safaris, cable cars and road trips with crazy scenery.",
-        regions: ['Cape Town', 'Kenya (safari)', 'Rwanda', 'Switzerland']
+        regions: ['Cape Town', 'Kenya (safari)', 'Rwanda', 'Switzerland'],
+        image: 'Ajala.png'
       }
     };
 
@@ -304,9 +310,19 @@
       const c = categoriesMeta[topKey];
 
       // build result view
-      qTextEl.textContent = `You’re a ${c.name} 🌍`;
+      qTextEl.textContent = `You’re ${c.name} 🌍`;
       qHelpEl.innerHTML = '';
       optionsEl.innerHTML = '';
+
+      // optional category image
+      if (c.image) {
+        const img = document.createElement('img');
+        img.className = 'result-img';
+        img.alt = c.name;
+        img.src = c.image;
+        img.onerror = () => { img.style.display = 'none'; };
+        optionsEl.appendChild(img);
+      }
 
       const desc = document.createElement('p');
       desc.className = 'result-text';
