@@ -356,10 +356,11 @@
       shareBtn.addEventListener('click', () => {
         const path = window.location.pathname.replace(/[^/]*$/, ''); // ensure trailing slash directory path
         const base = window.location.origin + path; // works for localhost and GitHub Pages project sites
-        const quizLink = base;
         const slug = categorySlugs[topKey] || topKey;
         const resultUrl = base + 'results/' + slug + '.html';
-        const tweetText = `I am a ${c.name}! 🚀\nTake THIS QUIZ to find out your travel personality 👇\n${quizLink}`;
+        const quizLink = base;
+        // Put the result URL as the only explicit link so X unfurls its image
+        const tweetText = `I am a ${c.name}! 🚀\nTake THIS QUIZ to find out your travel personality 👇\n${resultUrl}\nQuiz: xcursionquiz.vercel.app`; // domain shown as text to avoid competing preview
         const url = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweetText) + '&url=' + encodeURIComponent(resultUrl);
         window.open(url, '_blank');
       });
